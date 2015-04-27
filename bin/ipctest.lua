@@ -9,7 +9,7 @@ local t1 = ps.spawn([[
 	local ipc = require "ipc"
 	while true do
 		ipc.lock(shared)
-		term.write("IPC1 locks!\n")
+		print("IPC1 locks!")
 		os.sleep(0.125)
 		ipc.unlock(shared)
 	end
@@ -21,7 +21,7 @@ local t2 = ps.spawn([[
 	local ipc = require "ipc"
 	while true do
 		ipc.lock(shared)
-		term.write("IPC2 locks!\n")
+		print("IPC2 locks!")
 		os.sleep(0.25)
 		ipc.unlock(shared)
 	end

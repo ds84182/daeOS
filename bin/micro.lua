@@ -19,7 +19,7 @@ local w, h = gpu.getResolution()
 if arguments[1] then
 	local path = arguments[1]
 	if path:sub(1,1) ~= "/" then
-		path = ps.getEnv("PWD").."/"..path
+		path = filesystem.fixPath(ps.getEnv("PWD").."/"..path)
 	end
 	local parent, name = path:match("^(.*)/([^/]-)$")
 	bufferPath = path

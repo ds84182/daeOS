@@ -30,6 +30,11 @@ while true do
 		term.write("Elevation successful\n")
 		elevatedToProcessList[pid] = a
 	elseif signal == "child_death" then
+		local info = ps.getInfo(a)
+		if not info.peaceful then
+			term.write(info.error.."\n")
+		end
+		
 		ps.resume(elevatedToProcessList[a])
 		elevatedToProcessList[a] = nil
 		ps.remove(a)

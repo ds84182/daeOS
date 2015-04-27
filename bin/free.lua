@@ -14,5 +14,5 @@ function padRight(value, length)
 	end
 end
 
-term.write(padRight("Total",#total).." "..padRight("Used",#used).." Free\n")
-term.write(total.." "..(total-free).." "..free.."\n")
+print(padRight("Total",#total).." "..padRight("Used",#used).." Free")
+print(total.." "..(total-free).." "..free)

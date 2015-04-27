@@ -229,7 +229,7 @@ do
 		local r = table.pack(coroutine.resume(object.thread, table.unpack(args or _EMPTY)))
 		currentProcess = nil
 		local s = table.remove(r,1)
-		if (not s) or coroutine.status(object.thread) ~= "suspended" then
+		if coroutine.status(object.thread) == "dead" then
 			object.peaceful = s
 			object.error = s and "process has finished execution" or debug.traceback(object.thread,r[1])
 			if s then

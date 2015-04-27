@@ -6,7 +6,7 @@ local ipclets = setmetatable({},{__mode="k"})
 local ipcid, ipcidsigQ
 
 function ipc.new()
-	local id = {}
+	local id = setmetatable({},{__index=ipc,__metatable=error})
 	ipclets[id] = {lock=nil,lockDepth=0,waiting={},waitingForNotify={},data={}}
 	return id
 end
@@ -70,6 +70,17 @@ function ipc.push(id, value)
 		data.stackIndex = 1
 	end
 	data[data.stackIndex] = value
+	data.stackIndex = data.stackIndex+1
+	ipc.unlock(id)
+end
+
+function ipc.pushTop(id, value)
+	ipc.lock(id)
+	local data = ipc.get(id)
+	if not data.stackIndex then
+		data.stackIndex = 1
+	end
+	table.insert(data,1,value)
 	data.stackIndex = data.stackIndex+1
 	ipc.unlock(id)
 end

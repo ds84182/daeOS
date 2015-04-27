@@ -145,10 +145,11 @@ function term.isAvailable()
 	return false
 end
 
-function term.read(history, dobreak, hint, pwchar)
+function term.read(history, dobreak, hint, pwchar, sighandler)
 	checkArg(1, history, "table", "nil")
 	checkArg(3, hint, "function", "table", "nil")
 	checkArg(4, pwchar, "string", "nil")
+	checkArg(5, sighandler, "function", "nil")
 	history = history or {}
 	table.insert(history, "")
 	local offset = term.getCursor() - 1
@@ -415,10 +416,14 @@ function term.read(history, dobreak, hint, pwchar)
 	term.setCursorBlink(true)
 	while term.isAvailable() do
 		local ocx, ocy = getCursor()
-		local ok, name, address, charOrValue, code = pcall(computer.pullSignal)
+		local packed = table.pack(pcall(computer.pullSignal))
+		local ok, name, address, charOrValue, code = table.unpack(packed)
 		if not ok then
 			cleanup()
 			error("interrupted", 0)
+		end
+		if sighandler then
+			sighandler(table.unpack(packed,2))
 		end
 		local ncx, ncy = getCursor()
 		if ocx ~= ncx or ocy ~= ncy then

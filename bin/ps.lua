@@ -6,7 +6,8 @@ args[1] = args[1] or "info"
 
 local psrun = {}
 
-function psrun.info()
+function psrun.info(...)
+	local reqpid = table.pack(...)
 	local columnWidth = {}
 	local column = {}
 	local corder = {}
@@ -36,20 +37,29 @@ function psrun.info()
 	addString("Parent","Parent")
 	local proc = ps.listProcesses()
 	local info = {}
+	local reqpidmap = {}
+	for i, v in ipairs(reqpid) do
+		if v == "current" then
+			v = ps.getCurrentProcess()
+		end
+		reqpidmap[v] = true
+	end
 	for i, v in pairs(proc) do
-		ps.getInfo(v,info)
-		addString("ID",tostring(v))
-		addString("Name",info.name)
-		addString("Status",info.status)
-		addString("Kernel",info.kernelspace and "kernel" or "user")
-		addString("Parent",tostring(info.parent) or "None")
+		if #reqpid == 0 or reqpidmap[v] then
+			ps.getInfo(v,info)
+			addString("ID",tostring(v))
+			addString("Name",info.name)
+			addString("Status",info.status)
+			addString("Kernel",info.kernelspace and "kernel" or "user")
+			addString("Parent",tostring(info.parent) or "None")
+		end
 	end
 
 	for i=1, #column.ID do
 		for _, v in ipairs(corder) do
-			term.write(padRight(column[v][i],columnWidth[v]+1))
+			io.write(padRight(column[v][i],columnWidth[v]+1))
 		end
-		term.write("\n")
+		io.write("\n")
 	end
 end
 
@@ -57,7 +67,8 @@ function psrun.kill(...)
 	local info = {}
 	for i, v in pairs({...}) do
 		v = tonumber(v)
-		ps.remove(v)
+		local s, e = ps.remove(v)
+		print(s and "killed sucessfully" or "kill failed: "..e)
 	end
 end
 
@@ -66,8 +77,8 @@ function psrun.error(...)
 	for i, v in pairs({...}) do
 		v = tonumber(v)
 		ps.getInfo(v,info)
-		term.write(v..":\n")
-		term.write(info.error.."\n")
+		print(v..":")
+		print(info.error or "not finished")
 	end
 end
 
